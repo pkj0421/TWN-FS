@@ -1,0 +1,12 @@
+C 드라이브에 ShaEP 설치
+명령프로픔트 (cmd)
+cd c:\Windows_64bit-ShaEP
+shaep –h
+-Overlay 방법
+shaep --input-file INPUT_FILE.mol2 -q QUERY_FILE.mol2 --output-file OUTPUT_NAME.txt --outputAllOverlays OVERLAY.sd
+-Nonoverlay 방법
+shaep --input-file INPUT_FILE.mol2 -q QUERY_FILE.mol2 --output-file OUTPUT_NAME.txt --noOptimization
+shaep --input-file INPUT_FILE.mol2 -q QUERY_FILE.mol2 --output-file OUTPUT_NAME.txt --noOptimization -outputAllOverlays COORDINATE.sd
+
+
+Input file은 divide된 mol2가 아니라 한 mol2파일에 molecule이 있어야 함.
