@@ -1,5 +1,6 @@
 import sys
 import logging
+import argparse
 import subprocess
 from pathlib import Path
 
@@ -7,14 +8,21 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='TWN automation')
+    parser.add_argument('-twn', '--twn', required=True, help='Set your parent path of twn folder')
+    parser.add_argument('-region', '--region', required=True, help='Set your region folder path')
+    parser.add_argument('-shaep', '--shaep', required=True, help='Set your ShaEP program path')
+    parser.add_argument('-ref', '--ref_form', required=True, help='Set your reference form path')
+    parser.add_argument('-out', '--output', required=True, help='Set your output folder path')
+    args = parser.parse_args()
 
-    path = Path(r"parent path of twn folder")
+    path = Path(args.twn)
     twn_folders = [f for f in path.glob('*/')]
 
-    region = Path(f"region folder path")
-    shape = Path(f"shaep program path")
-    ref = Path(f"reference form file path")
-    out = Path(f"output folder path")
+    region = Path(args.region)
+    shape = Path(args.shaep)
+    ref = Path(args.ref_form)
+    out = Path(args.output)
 
     for idx, twn in enumerate(twn_folders):
         run = f"-tw {twn.as_posix()} -region {region.as_posix()} -shaep {shape.as_posix()} -ref {ref.as_posix()} -out {out.as_posix()}"
