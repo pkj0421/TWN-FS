@@ -184,16 +184,6 @@ def Match_Point(R_box, region, TGs, TGCPs):
 
     # Group file
     for TG_name, TG in TGs:
-        TGA = TG[['X', 'Y', 'Z']].astype(float).to_numpy()
-        R_crds['Dist'] = R_crds[['X', 'Y', 'Z']].apply(lambda c: min([math.dist(c, t) for t in TGA]), axis=1)
-        MP = len(R_crds.loc[R_crds['Dist'] <= 1])
-        TGCT = int(TG['Number of TWN'].unique()[0])
-
-        # TWN Group | Center Point | Distance Average, Distance Median
-        TGCP = list(map(float, TGCPs[TGCPs['MODEL'] == TG_name]['TGCP'].values[0].split('|')))
-        TGCP_DA = round(np.mean([math.dist(TGCP, rc) for rc in R_crds[['X', 'Y', 'Z']].values]), 2)
-        TGCP_DM = round(np.median([math.dist(TGCP, rc) for rc in R_crds[['X', 'Y', 'Z']].values]), 2)
-
         # DBSCAN Center Points
         DBCPs = [db.split('|') for db in TGCPs[TGCPs['MODEL'] == TG_name]['DBCP'].values[0].split('&')]
         Polygons = [[[x - 100 for x in list(map(float, c.split('-')))] for c in cp] for cp in DBCPs]
@@ -201,10 +191,8 @@ def Match_Point(R_box, region, TGs, TGCPs):
         polygon_dists = [distance_polygon_point(Polygon, RCP) for Polygon in Polygons]
         DB_DA = round(np.mean(polygon_dists), 2)
 
-        # Match Point
-        row = {'region': region, 'Molecule': R_pdb, 'Group': TG_name, 'Group|Match Point': MP,
-               'Group|Number of TWN': TGCT, 'Group|Center Point|Distance Average': TGCP_DA,
-               'Group|Center Point|Distance Median': TGCP_DM, 'DBSCAN|Distance Average': DB_DA}
+        # DBSCAN distance average
+        row = {'region': region, 'Molecule': R_pdb, 'Group': TG_name, 'DBSCAN|Distance Average': DB_DA}
         result += [row]
     return result
 
@@ -263,25 +251,24 @@ if __name__ == "__main__":
     # set regions
     # you can select specific subregion [AP, FP, GA, SE, X]
     subregions = ['AP', 'FP', 'GA', 'SE', 'X']
-    # subregions = ['FP']
     logger.info(f'Subregions : {subregions}')
 
     # Prepare fragment coordinates for distance calculation with twn
     Fragments = {}
     Region_path = Path(rf'{args.region}')
-    # Region_path = Path(rf'C:\Users\kmeda\Desktop\PNU\work\TWN-FS\kintools\region')
     Regions = [rg for rg in Region_path.glob('./*.mol2')]
-    for rg_file in tqdm(Regions, desc='Reading subregion mols... (for Match Point)'):
+    for rg_file in tqdm(Regions, desc='Reading coordinates of subregion molecules...'):
         Fragments[rg_file.stem] = Fragment_cordinates(rg_file)
 
-    # Read TWNs
+    # # Read TWNs
+
+    # initial setting (generate log file and folder)
     TWN = Path(rf'{args.twn_water}')
     twn_out = output_path / f'{TWN.stem}_Result'
     ob_out = twn_out / 'OBMol'
     twn_out.mkdir(parents=True, exist_ok=True)
     ob_out.mkdir(parents=True, exist_ok=True)
 
-    # initial setting
     set_log(twn_out, "Analysis.log")
     logger.info('Start TWN_gridbox.py')
 
@@ -289,7 +276,7 @@ if __name__ == "__main__":
     twn_run = f'-tw {TWN.as_posix()} -o {twn_out.as_posix()}'
     subprocess.run(args=[sys.executable, 'TWN_gridbox.py'] + twn_run.split(' '))
 
-    # pdb to sdf
+    # pdb to sdf (change molecular format)
     twn_file = Path(f'{twn_out.as_posix()}/TWN.pdb')
     ob_file = Path(f'{ob_out.as_posix()}/TWN.sdf')
     ob_exe = subprocess.check_output(['where', 'obabel']).decode().rstrip().split('\r\n')[0]
@@ -297,7 +284,7 @@ if __name__ == "__main__":
     subprocess.run(args=[ob_exe] + ob_run.split(' '))
     fix_sdf(ob_file)
 
-    # # ShaEP & MP
+    # # ShaEP & Match Point
     ShaEP = Path(rf'{args.shaep}')
     ShaEP_out = twn_out / 'ShaEP'
     ShaEP_out.mkdir(parents=True, exist_ok=True)
@@ -308,7 +295,6 @@ if __name__ == "__main__":
     TGCPs = pd.read_csv(twn_out / f'{twn_file.stem}_Group_Center_Point.tsv', sep='\t')
 
     # check sdf
-    # ob_file = Path(r"D:\PARK\Lab\HRY\TWN_gridbox\data\JAVA_rfour_Result\OBMol\TWN.sdf")
     check_file = [m for m in Chem.SDMolSupplier(str(ob_file))]
     lc = len(check_file)
     if lc >= 500:
@@ -362,21 +348,21 @@ if __name__ == "__main__":
         ShaEP_file = ShaEP_reader(ShaEP_sim, ShaEP_region_out)
         logger.info(f'Saved {region} ShaEP file')
 
-        # # Calculate distance average
-        pool_MP = multiprocessing.Pool(multiprocessing.cpu_count() - 5)
+        # # Calculate distance average (primary grouping & secondary grouping)
+        pool_MP = multiprocessing.Pool(multiprocessing.cpu_count())
         MP = partial(Match_Point, region=region, TGs=TGs, TGCPs=TGCPs)
 
-        # 20230213
-        MP_tqdm = tqdm(Fragments[region].items(),
-                         desc=f'Calculating {region} Match Point...')
-        MP_result = pd.DataFrame(sum(pool_MP.map(MP, MP_tqdm), []))
-        pool_MP.close()
-        pool_MP.join()
-
-        MP_result['Molecule'] = MP_result['Molecule'].astype('string')
-        MP_dic[f'{region}'] = MP_result
-        MP_result.to_csv(MP_out / f'{twn_file.stem}_{region}_Match_Point.tsv', sep='\t', index=False)
-        logger.info(f'Saved {region}_Match_Point file')
+        # # # Calculate match point
+        # MP_tqdm = tqdm(Fragments[region].items(),
+        #                  desc=f'Calculating {region} Match Point...')
+        # MP_result = pd.DataFrame(sum(pool_MP.map(MP, MP_tqdm), []))
+        # pool_MP.close()
+        # pool_MP.join()
+        #
+        # MP_result['Molecule'] = MP_result['Molecule'].astype('string')
+        # MP_dic[f'{region}'] = MP_result
+        # MP_result.to_csv(MP_out / f'{twn_file.stem}_{region}_Match_Point.tsv', sep='\t', index=False)
+        # logger.info(f'Saved {region}_Match_Point file')
 
     # # extract top
     logger.info(f'Selecting top values...')
