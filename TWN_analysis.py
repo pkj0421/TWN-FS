@@ -53,7 +53,7 @@ def fix_coord(coordinate):
     return result
 
 
-# named molecules
+# nomination of molecules
 def fix_sdf(file):
     with open(file, 'r') as sdf:
         fix_sdf = []
