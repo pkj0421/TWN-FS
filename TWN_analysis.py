@@ -14,7 +14,7 @@ from pathlib import Path
 from functools import partial
 
 '''
-BANG_gridbox.py
+TWN_gridbox.py
 parameters :
 -twn        TWN folder path (.pdb)
 -region     Subregion folder path (.mol2)
@@ -76,7 +76,7 @@ def fix_sdf(file):
 
 # Store fragment cordinates
 def Fragment_cordinates(region_mols):
-    # region_mols = Path(r"D:\PARK\Lab\HRY\BANG_gridbox\data\kintools\region\SE.mol2")
+    # region_mols = Path(r"D:\PARK\Lab\HRY\TWN_gridbox\data\kintools\region\SE.mol2")
     with open(region_mols, 'r') as sr:
         lines = sr.readlines()
         read_part = False
@@ -263,51 +263,52 @@ if __name__ == "__main__":
     # set regions
     # you can select specific subregion [AP, FP, GA, SE, X]
     subregions = ['AP', 'FP', 'GA', 'SE', 'X']
+    # subregions = ['FP']
     logger.info(f'Subregions : {subregions}')
 
     # Prepare fragment coordinates for distance calculation with twn
     Fragments = {}
     Region_path = Path(rf'{args.region}')
-    # Region_path = Path(rf'D:\PARK\Lab\HRY\BANG_gridbox\data\kintools\region')
+    # Region_path = Path(rf'C:\Users\kmeda\Desktop\PNU\work\TWN-FS\kintools\region')
     Regions = [rg for rg in Region_path.glob('./*.mol2')]
     for rg_file in tqdm(Regions, desc='Reading subregion mols... (for Match Point)'):
         Fragments[rg_file.stem] = Fragment_cordinates(rg_file)
 
     # Read TWNs
     TWN = Path(rf'{args.twn_water}')
-    bang_out = output_path / f'{TWN.stem}_Result'
-    ob_out = bang_out / 'OBMol'
-    bang_out.mkdir(parents=True, exist_ok=True)
+    twn_out = output_path / f'{TWN.stem}_Result'
+    ob_out = twn_out / 'OBMol'
+    twn_out.mkdir(parents=True, exist_ok=True)
     ob_out.mkdir(parents=True, exist_ok=True)
 
     # initial setting
-    set_log(bang_out, "Analysis.log")
+    set_log(twn_out, "Analysis.log")
     logger.info('Start TWN_gridbox.py')
 
     MP_dic = {}
-    bang_run = f'-tw {TWN.as_posix()} -o {bang_out.as_posix()}'
-    subprocess.run(args=[sys.executable, 'TWN_gridbox.py'] + bang_run.split(' '))
+    twn_run = f'-tw {TWN.as_posix()} -o {twn_out.as_posix()}'
+    subprocess.run(args=[sys.executable, 'TWN_gridbox.py'] + twn_run.split(' '))
 
     # pdb to sdf
-    bang_file = Path(f'{bang_out.as_posix()}/TWN.pdb')
+    twn_file = Path(f'{twn_out.as_posix()}/TWN.pdb')
     ob_file = Path(f'{ob_out.as_posix()}/TWN.sdf')
     ob_exe = subprocess.check_output(['where', 'obabel']).decode().rstrip().split('\r\n')[0]
-    ob_run = f'{bang_file.as_posix()} -O {ob_file.as_posix()} --errorlevel 1 --addinindex 1'
+    ob_run = f'{twn_file.as_posix()} -O {ob_file.as_posix()} --errorlevel 1 --addinindex 1'
     subprocess.run(args=[ob_exe] + ob_run.split(' '))
     fix_sdf(ob_file)
 
     # # ShaEP & MP
     ShaEP = Path(rf'{args.shaep}')
-    ShaEP_out = bang_out / 'ShaEP'
+    ShaEP_out = twn_out / 'ShaEP'
     ShaEP_out.mkdir(parents=True, exist_ok=True)
 
-    MP_out = bang_out / 'Match_Point'
+    MP_out = twn_out / 'Match_Point'
     MP_out.mkdir(parents=True, exist_ok=True)
-    TGs = TWN_Group_Reader(bang_file, bang_file.with_name(f'{bang_file.stem}_Group_inform.xlsx'))
-    TGCPs = pd.read_csv(bang_out / f'{bang_file.stem}_Group_Center_Point.tsv', sep='\t')
+    TGs = TWN_Group_Reader(twn_file, twn_file.with_name(f'{twn_file.stem}_Group_inform.xlsx'))
+    TGCPs = pd.read_csv(twn_out / f'{twn_file.stem}_Group_Center_Point.tsv', sep='\t')
 
     # check sdf
-    # ob_file = Path(r"D:\PARK\Lab\HRY\BANG_gridbox\data\JAVA_rfour_Result\OBMol\TWN.sdf")
+    # ob_file = Path(r"D:\PARK\Lab\HRY\TWN_gridbox\data\JAVA_rfour_Result\OBMol\TWN.sdf")
     check_file = [m for m in Chem.SDMolSupplier(str(ob_file))]
     lc = len(check_file)
     if lc >= 500:
@@ -374,7 +375,7 @@ if __name__ == "__main__":
 
         MP_result['Molecule'] = MP_result['Molecule'].astype('string')
         MP_dic[f'{region}'] = MP_result
-        MP_result.to_csv(MP_out / f'{bang_file.stem}_{region}_Match_Point.tsv', sep='\t', index=False)
+        MP_result.to_csv(MP_out / f'{twn_file.stem}_{region}_Match_Point.tsv', sep='\t', index=False)
         logger.info(f'Saved {region}_Match_Point file')
 
     # # extract top
@@ -427,7 +428,7 @@ if __name__ == "__main__":
     # # Summary
     ref = Path(rf"{args.ref_form}")
     logger.info('Writing Summary...')
-    with pd.ExcelWriter(bang_out / 'Summary.xlsx') as writer:
+    with pd.ExcelWriter(twn_out / 'Summary.xlsx') as writer:
         ref_form = pd.read_excel(ref, sheet_name='Sheet1', dtype={'PDB': 'string'}).drop(columns=['ID', 'Region_count'])
         for region in subregions:
             ref_region_form = ref_form[ref_form['region'] == region].drop(columns=['region'])

@@ -16,13 +16,13 @@ if __name__ == "__main__":
     parser.add_argument('-out', '--output', required=True, help='Set your output folder path')
     args = parser.parse_args()
 
-    path = Path(args.twn)
+    path = Path(rf"{args.twn}")
     twn_folders = [f for f in path.glob('*/')]
 
-    region = Path(args.region)
-    shape = Path(args.shaep)
-    ref = Path(args.ref_form)
-    out = Path(args.output)
+    region = Path(rf"{args.region}")
+    shape = Path(rf"{args.shaep}")
+    ref = Path(rf"{args.ref_form}")
+    out = Path(rf"{args.output}")
 
     for idx, twn in enumerate(twn_folders):
         run = f"-tw {twn.as_posix()} -region {region.as_posix()} -shaep {shape.as_posix()} -ref {ref.as_posix()} -out {out.as_posix()}"
