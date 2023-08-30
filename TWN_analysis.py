@@ -76,7 +76,7 @@ def fix_sdf(file):
 
 # Store fragment cordinates
 def Fragment_cordinates(region_mols):
-    # region_mols = Path(r"D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\Region\SE.mol2")
+    # region_mols = Path(r"D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\region\SE.mol2")
     with open(region_mols, 'r') as sr:
         lines = sr.readlines()
         read_part = False
@@ -202,7 +202,7 @@ def Match_Point(R_box, region, TGs, TGCPs):
         DB_DA = round(np.mean(polygon_dists), 2)
 
         # Match Point
-        row = {'Region': region, 'Molecule': R_pdb, 'Group': TG_name, 'Group|Match Point': MP,
+        row = {'region': region, 'Molecule': R_pdb, 'Group': TG_name, 'Group|Match Point': MP,
                'Group|Number of TWN': TGCT, 'Group|Center Point|Distance Average': TGCP_DA,
                'Group|Center Point|Distance Median': TGCP_DM, 'DBSCAN|Distance Average': DB_DA}
         result += [row]
@@ -219,7 +219,7 @@ def Select_top_value(subrg, ShaEP_output, distbox, sc):
     for file in ShaEP_files:
         data = pd.read_csv(file, sep='\t', dtype={'Molecule': 'string'})
         groups = data.groupby('Molecule')
-        gp_distbox = distbox[subrg].drop(columns='Region')
+        gp_distbox = distbox[subrg].drop(columns='region')
         for gp_key, gp in groups:
             pdbs.add(gp_key)
             gp_dist = pd.merge(gp, gp_distbox, how='left', on=['Group', 'Molecule'])
@@ -268,7 +268,7 @@ if __name__ == "__main__":
     # Prepare fragment coordinates for distance calculation with twn
     Fragments = {}
     Region_path = Path(rf'{args.region}')
-    # Region_path = Path(rf'D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\Region')
+    # Region_path = Path(rf'D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\region')
     Regions = [rg for rg in Region_path.glob('./*.mol2')]
     for rg_file in tqdm(Regions, desc='Reading subregion mols... (for Match Point)'):
         Fragments[rg_file.stem] = Fragment_cordinates(rg_file)
@@ -430,10 +430,10 @@ if __name__ == "__main__":
     with pd.ExcelWriter(bang_out / 'Summary.xlsx') as writer:
         ref_form = pd.read_excel(ref, sheet_name='Sheet1', dtype={'PDB': 'string'}).drop(columns=['ID', 'Region_count'])
         for region in subregions:
-            ref_region_form = ref_form[ref_form['Region'] == region].drop(columns=['Region'])
+            ref_region_form = ref_form[ref_form['region'] == region].drop(columns=['region'])
             ref_region_form['PDB'] = ref_region_form['PDB'].apply(lambda x: x.replace('_', '-'))
 
-            # Region Tops
+            # region Tops
             RT = ShaEP_tops[region]
             RT_merge = pd.merge(ref_region_form, RT, how='left', left_on='PDB', right_on='pdb')
 

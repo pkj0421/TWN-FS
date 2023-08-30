@@ -71,7 +71,7 @@ def Region_CP(region_mols, region_name):
                 comp_y += [dic_atom['Y']]
                 comp_z += [dic_atom['Z']]
         result = pd.DataFrame(result)
-        result['Region'] = region_name
+        result['region'] = region_name
         return result
 
 
@@ -79,12 +79,12 @@ def DistAVG(gp, rcp):
     result = []
     for _, R_row in rcp.iterrows():
         R_name = R_row['Molecule']
-        R_region = R_row['Region']
+        R_region = R_row['region']
         R_CP = tuple(R_row[2:5])
         R_center = tuple(R_row[1])
         gp['Dist'] = gp[['X', 'Y', 'Z']].apply(lambda c: cal_distance(R_CP, c, R_center), axis=1)
         gp['F_Dist'] = gp['Dist'].apply(lambda d: d - gp['Dist'].min())
-        row = {'Region': R_region, 'Molecule': R_name, 'TWN_Group': gp['MODEL'].values[0]}
+        row = {'region': R_region, 'Molecule': R_name, 'TWN_Group': gp['MODEL'].values[0]}
         row['Dist_AVG'] = round(gp['F_Dist'].mean(), 2)
         result += [row]
     return result
@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     # cmol
     cmol = Path(rf"{args.compare_molecule}")
-    # cmol = Path(rf"D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\Region")
+    # cmol = Path(rf"D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\region")
 
     RCP_dic = []
     Regions = [rg for rg in cmol.glob('./*.mol2')]
