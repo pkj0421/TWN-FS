@@ -76,7 +76,7 @@ def fix_sdf(file):
 
 # Store fragment cordinates
 def Fragment_cordinates(region_mols):
-    # region_mols = Path(r"D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\region\SE.mol2")
+    # region_mols = Path(r"D:\PARK\Lab\HRY\BANG_gridbox\data\kintools\region\SE.mol2")
     with open(region_mols, 'r') as sr:
         lines = sr.readlines()
         read_part = False
@@ -261,14 +261,14 @@ if __name__ == "__main__":
     output_path = Path(rf"{args.output}")
 
     # set regions
+    # you can select specific subregion [AP, FP, GA, SE, X]
     subregions = ['AP', 'FP', 'GA', 'SE', 'X']
-    # subregions = ['FP']
     logger.info(f'Subregions : {subregions}')
 
     # Prepare fragment coordinates for distance calculation with twn
     Fragments = {}
     Region_path = Path(rf'{args.region}')
-    # Region_path = Path(rf'D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\region')
+    # Region_path = Path(rf'D:\PARK\Lab\HRY\BANG_gridbox\data\kintools\region')
     Regions = [rg for rg in Region_path.glob('./*.mol2')]
     for rg_file in tqdm(Regions, desc='Reading subregion mols... (for Match Point)'):
         Fragments[rg_file.stem] = Fragment_cordinates(rg_file)

@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     # cmol
     cmol = Path(rf"{args.compare_molecule}")
-    # cmol = Path(rf"D:\PARK\Lab\HRY\BANG_gridbox\data\Kintools\region")
+    # cmol = Path(rf"D:\PARK\Lab\HRY\BANG_gridbox\data\kintools\region")
 
     RCP_dic = []
     Regions = [rg for rg in cmol.glob('./*.mol2')]
