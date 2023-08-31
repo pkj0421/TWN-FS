@@ -1,0 +1,9 @@
+2023-09-01 00:47:46,600 [INFO] Set TWN water : C:\Users\Admin\Desktop\PNU_work\TWN-FS\data\TWNs\CDK2 | 3961 files in folder
+2023-09-01 00:47:46,601 [INFO] Start TWN analysis...
+2023-09-01 00:47:47,526 [INFO] Generated 11925 gridbox
+2023-09-01 00:48:02,792 [INFO] Search TWN clusters : 208 -> Remove sub-clusters 131
+2023-09-01 00:48:04,390 [INFO] 25 groups merging... generate 10 new sets.
+2023-09-01 00:48:04,390 [INFO] final sets : 131 - 25 + 10 = 116
+2023-09-01 00:48:04,493 [INFO] Saved RDBC_inform : C:\Users\Admin\Desktop\PNU_work\TWN-FS\data\CDK2_Result\TWN_Group_Center_Point.tsv
+2023-09-01 00:48:04,497 [INFO] Saved C:\Users\Admin\Desktop\PNU_work\TWN-FS\data\CDK2_Result\TWN.pdb
+2023-09-01 00:48:04,498 [INFO] Complete.

@@ -349,7 +349,7 @@ if __name__ == "__main__":
 
     # set output
     output_path = Path(rf"{args.output}")
-    set_log(output_path, "BANG_gridbox.log")
+    set_log(output_path, "TWN_gridbox.log")
 
     # set protein & boundary
     if args.protein:

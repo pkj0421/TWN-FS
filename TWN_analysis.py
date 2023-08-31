@@ -176,8 +176,8 @@ def distance_polygon_point(vertices, point):
     return distance
 
 
-# How many atoms in fragment match in TG space (euclidian distance <= 1)
-def Match_Point(R_box, region, TGs, TGCPs):
+# calculate average of distances between ligand centroid and DBSCAN centroid
+def Distance_Average(R_box, region, TGs, TGCPs):
     result = []
     R_pdb, R_crds = R_box
     RCP = list(R_crds.mean())  # centroid of fragment
@@ -250,7 +250,8 @@ if __name__ == "__main__":
 
     # set regions
     # you can select specific subregion [AP, FP, GA, SE, X]
-    subregions = ['AP', 'FP', 'GA', 'SE', 'X']
+    # subregions = ['AP', 'FP', 'GA', 'SE', 'X']
+    subregions = ['FP']
     logger.info(f'Subregions : {subregions}')
 
     # Prepare fragment coordinates for distance calculation with twn
@@ -272,7 +273,7 @@ if __name__ == "__main__":
     set_log(twn_out, "Analysis.log")
     logger.info('Start TWN_gridbox.py')
 
-    MP_dic = {}
+    DA_dic = {}
     twn_run = f'-tw {TWN.as_posix()} -o {twn_out.as_posix()}'
     subprocess.run(args=[sys.executable, 'TWN_gridbox.py'] + twn_run.split(' '))
 
@@ -284,13 +285,13 @@ if __name__ == "__main__":
     subprocess.run(args=[ob_exe] + ob_run.split(' '))
     fix_sdf(ob_file)
 
-    # # ShaEP & Match Point
+    # # ShaEP & Distance Average
     ShaEP = Path(rf'{args.shaep}')
     ShaEP_out = twn_out / 'ShaEP'
     ShaEP_out.mkdir(parents=True, exist_ok=True)
 
-    MP_out = twn_out / 'Match_Point'
-    MP_out.mkdir(parents=True, exist_ok=True)
+    DA_out = twn_out / 'Distance_Average'
+    DA_out.mkdir(parents=True, exist_ok=True)
     TGs = TWN_Group_Reader(twn_file, twn_file.with_name(f'{twn_file.stem}_Group_inform.xlsx'))
     TGCPs = pd.read_csv(twn_out / f'{twn_file.stem}_Group_Center_Point.tsv', sep='\t')
 
@@ -349,27 +350,27 @@ if __name__ == "__main__":
         logger.info(f'Saved {region} ShaEP file')
 
         # # Calculate distance average (primary grouping & secondary grouping)
-        pool_MP = multiprocessing.Pool(multiprocessing.cpu_count())
-        MP = partial(Match_Point, region=region, TGs=TGs, TGCPs=TGCPs)
+        pool_DA = multiprocessing.Pool(multiprocessing.cpu_count())
+        DA = partial(Distance_Average, region=region, TGs=TGs, TGCPs=TGCPs)
 
-        # # # Calculate match point
-        # MP_tqdm = tqdm(Fragments[region].items(),
-        #                  desc=f'Calculating {region} Match Point...')
-        # MP_result = pd.DataFrame(sum(pool_MP.map(MP, MP_tqdm), []))
-        # pool_MP.close()
-        # pool_MP.join()
-        #
-        # MP_result['Molecule'] = MP_result['Molecule'].astype('string')
-        # MP_dic[f'{region}'] = MP_result
-        # MP_result.to_csv(MP_out / f'{twn_file.stem}_{region}_Match_Point.tsv', sep='\t', index=False)
-        # logger.info(f'Saved {region}_Match_Point file')
+        # # Calculate distance average
+        DA_tqdm = tqdm(Fragments[region].items(),
+                         desc=f'Calculating {region} Distance Average Point...')
+        DA_result = pd.DataFrame(sum(pool_DA.map(DA, DA_tqdm), []))
+        pool_DA.close()
+        pool_DA.join()
+
+        DA_result['Molecule'] = DA_result['Molecule'].astype('string')
+        DA_dic[f'{region}'] = DA_result
+        DA_result.to_csv(DA_out / f'{twn_file.stem}_{region}_Distance_Average.tsv', sep='\t', index=False)
+        logger.info(f'Saved {region}_Distance_Average file')
 
     # # extract top
     logger.info(f'Selecting top values...')
 
     # prompt the user to enter a column name to sort by
-    logger.info(f"Column names : {['ShaEP'] + MP_result.columns.tolist()}")
-    logger.info('Input example : ShaEP-desc, Group|Match Point-desc, DBSCAN|Distance Average-asc')
+    logger.info(f"Column names : {['ShaEP'] + DA_result.columns.tolist()}")
+    logger.info('Input example : ShaEP-desc, DBSCAN|Distance Average-asc')
 
     if args.condition:
         # for log
@@ -391,7 +392,7 @@ if __name__ == "__main__":
             for col, asending in sort_cols:
                 if (col == 'ShaEP') and (asending in [True, False]):
                     continue
-                elif (col in MP_result.columns) and (asending in [True, False]):
+                elif (col in DA_result.columns) and (asending in [True, False]):
                     continue
                 else:
                     check = False
@@ -401,11 +402,11 @@ if __name__ == "__main__":
             else:
                 print("That's not the correct. Please try again.")
     else:
-        sort_cols = [('ShaEP', False), ('Group|Match Point', False), ('DBSCAN|Distance Average', True)]
+        sort_cols = [('ShaEP', False), ('DBSCAN|Distance Average', True)]
     logger.info(f'Sorting columns : {sort_cols}')
 
     pool_ST = multiprocessing.Pool(len(subregions))
-    ST = partial(Select_top_value, ShaEP_output=ShaEP_out, distbox=MP_dic, sc=sort_cols)
+    ST = partial(Select_top_value, ShaEP_output=ShaEP_out, distbox=DA_dic, sc=sort_cols)
     ShaEP_tops = dict(pool_ST.map(ST, subregions))
     pool_ST.close()
     pool_ST.join()

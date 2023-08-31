@@ -1,0 +1,12 @@
+2023-09-01 00:47:44,735 [INFO] Start TWN_gridbox.py
+2023-09-01 00:48:13,433 [INFO] Saved FP ShaEP file
+2023-09-01 00:48:28,691 [INFO] Saved FP_Distance_Average file
+2023-09-01 00:48:28,691 [INFO] Selecting top values...
+2023-09-01 00:48:28,691 [INFO] Column names : ['ShaEP', 'region', 'Molecule', 'Group', 'DBSCAN|Distance Average']
+2023-09-01 00:48:28,691 [INFO] Input example : ShaEP-desc, DBSCAN|Distance Average-asc
+2023-09-01 00:48:28,691 [INFO] Sorting columns : [('ShaEP', False), ('DBSCAN|Distance Average', True)]
+2023-09-01 00:49:56,148 [INFO] Extracted top similarity.
+2023-09-01 00:49:56,148 [INFO] Writing Summary...
+2023-09-01 00:49:56,984 [INFO] Saved Summary
+2023-09-01 00:49:56,984 [INFO] All process have been completed
+2023-09-01 00:49:56,986 [INFO] Learning time : 00:02:17
