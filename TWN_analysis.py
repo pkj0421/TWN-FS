@@ -250,8 +250,8 @@ if __name__ == "__main__":
 
     # set regions
     # you can select specific subregion [AP, FP, GA, SE, X]
-    subregions = ['FP']
-    # subregions = ['AP', 'FP', 'GA', 'SE', 'X']
+    # subregions = ['FP']
+    subregions = ['AP', 'FP', 'GA', 'SE', 'X']
     logger.info(f'Subregions : {subregions}')
 
     # Prepare fragment coordinates for distance calculation with twn
