@@ -250,8 +250,8 @@ if __name__ == "__main__":
 
     # set regions
     # you can select specific subregion [AP, FP, GA, SE, X]
-    # subregions = ['AP', 'FP', 'GA', 'SE', 'X']
     subregions = ['FP']
+    # subregions = ['AP', 'FP', 'GA', 'SE', 'X']
     logger.info(f'Subregions : {subregions}')
 
     # Prepare fragment coordinates for distance calculation with twn
@@ -265,16 +265,16 @@ if __name__ == "__main__":
 
     # initial setting (generate log file and folder)
     TWN = Path(rf'{args.twn_water}')
-    twn_out = output_path / f'{TWN.stem}_Result'
+    twn_out = output_path / f'TWN-FS_{TWN.stem}'
     ob_out = twn_out / 'OBMol'
     twn_out.mkdir(parents=True, exist_ok=True)
     ob_out.mkdir(parents=True, exist_ok=True)
 
-    set_log(twn_out, "Analysis.log")
+    set_log(twn_out, "TWN_analysis.log")
     logger.info('Start TWN_gridbox.py')
 
     DA_dic = {}
-    twn_run = f'-tw {TWN.as_posix()} -o {twn_out.as_posix()}'
+    twn_run = f'-twn {TWN.as_posix()} -o {twn_out.as_posix()}'
     subprocess.run(args=[sys.executable, 'TWN_gridbox.py'] + twn_run.split(' '))
 
     # pdb to sdf (change molecular format)

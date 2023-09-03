@@ -220,7 +220,7 @@ def TWN_writer(twn_box, twn_inform, twn_out):
     cluster = []
     for t_key, twn_pocket in twn_inform.items():
 
-        # search twn coordinates
+        # search twn coordinates (adjacent ring TWNs)
         for tr in twn_pocket:
 
             # bring gridbox information include atom of twn
@@ -229,7 +229,7 @@ def TWN_writer(twn_box, twn_inform, twn_out):
             # expand area each atom
             space = [broad_match(ar, twn_inform) for ar in area]
 
-            # find intersection atoms
+            # find intersection atoms (primary grouping)
             twn_group = eval(' & '.join([f"space[{s}]" for s in range(0, len(area))]))
 
             if not twn_group:
@@ -242,9 +242,10 @@ def TWN_writer(twn_box, twn_inform, twn_out):
 
     # remove sub-clusters
     remove_subsets = [c for c in cluster if len([s for s in cluster if c.issubset(s)]) == 1]
-    logger.info(f'Search TWN clusters : {len(cluster)} -> Remove sub-clusters {len(remove_subsets)}')
+    logger.info(f'Search TWN clusters : {len(cluster)} -> remove sub-clusters {len(cluster) - len(remove_subsets)} (duple clusters that small and already in another cluster)')
+    logger.info(f'Primary grouping results : {len(remove_subsets)}')
 
-    # re-grouping cluster (DBSCAN)
+    # secondary grouping (DBSCAN clustering)
     db_atoms = {}
     db_centers = []
     dbscan = DBSCAN(eps=1, min_samples=2)
@@ -281,8 +282,10 @@ def TWN_writer(twn_box, twn_inform, twn_out):
     regroup_sets = regroups + [sb[1] for sb in enumerate(remove_subsets) if not sb[0] in remove_gp]
     regroup_sets_num = duple_setnum + [{sb[0]} for sb in enumerate(db_atoms.keys()) if not sb[0] in remove_gp]
 
-    logger.info(f'{len(remove_gp)} groups merging... generate {len(regroups)} new sets.')
-    logger.info(f'final sets : {len(remove_subsets)} - {len(remove_gp)} + {len(regroups)} = {len(regroup_sets)}')
+    logger.info(f'Merging {len(remove_gp)} groups... (groups excluded from existing results of primary clustering for secondary clustering)')
+    logger.info(f'Generating {len(regroups)} new groups... (secondary clustering)')
+    logger.info(f'Secondary grouping results : {len(remove_subsets)} (results of primary clustering) - {len(remove_gp)} (secondary: merge_groups) + {len(regroups)} (secondary: generate_new_groups) = {len(regroup_sets)} (results of secondary clustering)')
+    logger.info(f'Certain TWNs can create clusters with different directions. so, number of clusters can be created more than the primary clustering.')
 
     # regroups db_centers
     rdb_centers = []
@@ -301,7 +304,7 @@ def TWN_writer(twn_box, twn_inform, twn_out):
         for rdb_idx, tgcp, ring_num, dbcp in rdb_centers:
             tgcp_crds = '|'.join([str(t) for t in tgcp])
             rdb.write(f"{twn_out.stem}_Group_{rdb_idx}\t{tgcp_crds}\t{ring_num}\t{dbcp}\n")
-    logger.info(f"Saved RDBC_inform : {twn_out.parent / f'{twn_out.stem}_Group_Center_Point.tsv'}")
+    logger.info(f"Saved centroids of grouped TWNs-fragment : {twn_out.parent / f'{twn_out.stem}_Group_Center_Point.tsv'}")
 
     # naming twn cluster
     twn_each = []
@@ -339,10 +342,10 @@ def trans_name(pdb, key):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='BANG grid box')
+    parser = argparse.ArgumentParser(description=' Read TWN coordinates by using gridbox')
     parser.add_argument('-pt', '--protein', default=False, help='Set your protein file')
     parser.add_argument('-bd', '--boundary', default=False, help='Set your boundary file')
-    parser.add_argument('-tw', '--twn_water', required=True, help='Set your twn folder')
+    parser.add_argument('-twn', '--twn_water', required=True, help='Set your twn folder')
     parser.add_argument('-o', '--output', required=True, help='Set your output folder')
     parser.add_argument('-c', '--complex', action='store_true', help='If you hope to gain complex.pdb')
     args = parser.parse_args()
@@ -377,7 +380,7 @@ if __name__ == "__main__":
     logger.info(f'Generated {len(TWN_inform)} gridbox')
 
     TWN_pdb = TWN_writer(TWN_box, TWN_inform, TWN_out)
-    logger.info(f'Saved {TWN_out}')
+    logger.info(f'Saved pdb : {TWN_out}')
 
     # write complex pdb
     if args.complex:

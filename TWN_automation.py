@@ -25,7 +25,7 @@ if __name__ == "__main__":
     out = Path(rf"{args.output}")
 
     for idx, twn in enumerate(twn_folders):
-        run = f"-tw {twn.as_posix()} -region {region.as_posix()} -shaep {shape.as_posix()} -ref {ref.as_posix()} -out {out.as_posix()}"
+        run = f"-twn {twn.as_posix()} -region {region.as_posix()} -shaep {shape.as_posix()} -ref {ref.as_posix()} -out {out.as_posix()}"
         subprocess.run(args=[sys.executable, 'TWN_analysis.py'] + run.split(' '))
         logger.info(f'Finished : {twn.stem} folder ({idx + 1}/{len(twn_folders)})')
 
