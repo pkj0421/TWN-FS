@@ -11,7 +11,7 @@ Analyzing the TWNs in protein binding sites can provide valuable insights into p
 Here, we introduce TWN-based fragment screening (TWN-FS) method, a novel screening method that suggests fragments through grouped TWN analysis within the protein binding site. 
 
 ## Installation
-This code was tested in Python 3.9.
+This code was tested in windows with Python 3.9.
 
 A yaml file containing all requirements is provided.
 
