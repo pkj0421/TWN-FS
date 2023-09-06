@@ -32,6 +32,8 @@ Analyze TWNs-fragment of multiple proteins in one running.
 
 TWN_analysis.py and TWN_gridbox.py are operated sequentially.
 
+TWNs of cyclin dependent kinase 2 (CDK2) and fragments of subregion are provided as example data.
+
 Outputs :
 * TWN.pdb : pdb file (grouped TWNs-fragment visualization, only oxygen atoms are displayed).
 * Summary.xlsx : summary of results grouped TWNs-fragment calculation scores (shape similarity and average distance).
