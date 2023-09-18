@@ -76,7 +76,6 @@ def fix_sdf(file):
 
 # Store fragment cordinates
 def Fragment_cordinates(region_mols):
-    # region_mols = Path(r"D:\PARK\Lab\HRY\TWN_gridbox\data\kintools\region\SE.mol2")
     with open(region_mols, 'r') as sr:
         lines = sr.readlines()
         read_part = False
@@ -249,8 +248,6 @@ if __name__ == "__main__":
     output_path = Path(rf"{args.output}")
 
     # set regions
-    # you can select specific subregion [AP, FP, GA, SE, X]
-    # subregions = ['AP', 'FP', 'GA', 'SE', 'X']
     subregions = ['AP']
     logger.info(f'Subregions : {subregions}')
 
