@@ -18,7 +18,7 @@ TWN_gridbox.py
 parameters :
 -twn        TWN folder path (.pdb)
 -region     Subregion folder path (.mol2)
--ShaEP      ShaEP program path
+-shaep      shaep program path
 -ref        Reference form file path (initial columns in Summary, .xlsx)
 -out        Output path
 '''
@@ -105,7 +105,7 @@ def Fragment_cordinates(region_mols):
         return result
 
 
-# Read ShaEP result
+# Read shaep result
 def ShaEP_reader(data, out):
     ShaEP_data = pd.read_csv(data, sep='\t').drop(columns=['best_similarity',
                                                            'shape_similarity',
@@ -124,10 +124,10 @@ def ShaEP_reader(data, out):
     ShaEP_fcols = [c for c in ShaEP_data.keys() if c != 'molecule' and c != 'sort']
     ShaEP_data[ShaEP_fcols] = round(ShaEP_data[ShaEP_fcols], 2)
 
-    # ShaEP final results
+    # shaep final results
     ShaEP_final = out / f"{ShaEP_sim.stem}_final.tsv"
     with open(ShaEP_final, 'w') as f:
-        f.write('Group\tMolecule\tShaEP\n')
+        f.write('Group\tMolecule\tshaep\n')
         for i, row in ShaEP_data.iterrows():
             for sfc in ShaEP_fcols:
                 if not np.isnan(row[sfc]):
@@ -197,7 +197,7 @@ def Distance_Average(R_box, region, TGs, TGCPs):
     return result
 
 
-# extract top similarity in ShaEP outputs
+# extract top similarity in shaep outputs
 def Select_top_value(subrg, ShaEP_output, distbox, sc):
     ShaEP_subrg = ShaEP_output / f"ShaEP_{subrg}"
     ShaEP_files = [sf for sf in ShaEP_subrg.glob('./*.tsv')]
@@ -236,7 +236,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='TWN analysis')
     parser.add_argument('-twn', '--twn_water', required=True, help='Set your twn folder')
     parser.add_argument('-region', '--region', required=True, help='Set your region folder')
-    parser.add_argument('-ShaEP', '--ShaEP', required=True, help='Set your ShaEP program')
+    parser.add_argument('-shaep', '--shaep', required=True, help='Set your shaep program')
     parser.add_argument('-cond', '--condition', default=False, help='If you want extract condition')
     parser.add_argument('-ref', '--ref_form', required=True, help='Set your reference form')
     parser.add_argument('-out', '--output', required=True, help='Set your output folder')
@@ -285,7 +285,7 @@ if __name__ == "__main__":
     subprocess.run(args=[ob_exe] + ob_run.split(' '))
     fix_sdf(ob_file)
 
-    # # ShaEP & Distance Average
+    # # shaep & Distance Average
     ShaEP = Path(rf'{args.shaep}')
     ShaEP_out = twn_out / 'ShaEP'
     ShaEP_out.mkdir(parents=True, exist_ok=True)
@@ -334,7 +334,7 @@ if __name__ == "__main__":
                 ShaEP_run = f'--input-file {d_sdf.as_posix()} --q {ShaEP_region.as_posix()} ' \
                             f'--output-file {D_sim.as_posix()} --noOptimization'
                 subprocess.run(args=[str(ShaEP)] + ShaEP_run.split(' '), shell=True)
-                logger.info(f"Processed ShaEP : {d_sdf} file")
+                logger.info(f"Processed shaep : {d_sdf} file")
 
             logger.info('Combining sims...')
             comb_sims = pd.concat([pd.read_csv(f, sep='\t') for f in sim_combine]).reset_index(drop=True)
@@ -345,9 +345,9 @@ if __name__ == "__main__":
                         f'--output-file {ShaEP_sim.as_posix()} --noOptimization'
             subprocess.run(args=[str(ShaEP)] + ShaEP_run.split(' '), shell=True)
 
-        # # Calculate ShaEP
+        # # Calculate shaep
         ShaEP_file = ShaEP_reader(ShaEP_sim, ShaEP_region_out)
-        logger.info(f'Saved {region} ShaEP file')
+        logger.info(f'Saved {region} shaep file')
 
         # # Calculate distance average (primary grouping & secondary grouping)
         pool_DA = multiprocessing.Pool(multiprocessing.cpu_count())
@@ -369,8 +369,8 @@ if __name__ == "__main__":
     logger.info(f'Selecting top values...')
 
     # prompt the user to enter a column name to sort by
-    logger.info(f"Column names : {['ShaEP'] + DA_result.columns.tolist()}")
-    logger.info('Input example : ShaEP-desc, DBSCAN|Distance Average-asc')
+    logger.info(f"Column names : {['shaep'] + DA_result.columns.tolist()}")
+    logger.info('Input example : shaep-desc, DBSCAN|Distance Average-asc')
 
     if args.condition:
         # for log
@@ -390,7 +390,7 @@ if __name__ == "__main__":
             # check input
             check = True
             for col, asending in sort_cols:
-                if (col == 'ShaEP') and (asending in [True, False]):
+                if (col == 'shaep') and (asending in [True, False]):
                     continue
                 elif (col in DA_result.columns) and (asending in [True, False]):
                     continue
@@ -402,7 +402,7 @@ if __name__ == "__main__":
             else:
                 print("That's not the correct. Please try again.")
     else:
-        sort_cols = [('ShaEP', False), ('DBSCAN|Distance Average', True)]
+        sort_cols = [('shaep', False), ('DBSCAN|Distance Average', True)]
     logger.info(f'Sorting columns : {sort_cols}')
 
     pool_ST = multiprocessing.Pool(len(subregions))
@@ -416,7 +416,7 @@ if __name__ == "__main__":
     ref = Path(rf"{args.ref_form}")
     logger.info('Writing Summary...')
     with pd.ExcelWriter(twn_out / 'Summary.xlsx') as writer:
-        ref_form = pd.read_excel(ref, sheet_name='Sheet1', dtype={'PDB': 'string'}).drop(columns=['ID', 'Region_count'])
+        ref_form = pd.read_excel(ref, sheet_name='Sheet1', dtype={'PDB': 'string'}).drop(columns=['ID'])
         for region in subregions:
             ref_region_form = ref_form[ref_form['region'] == region].drop(columns=['region'])
             ref_region_form['PDB'] = ref_region_form['PDB'].apply(lambda x: x.replace('_', '-'))

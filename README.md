@@ -65,13 +65,13 @@ Files that can be changed according to user analysis
 * Analysis.txt, TWN_gridbox.txt : log files of .py that was executed.
 
 ```sh
-python TWN_automation.py -twn parent parent_path_of_twn_folder -region subregion_path -ShaEP shaep_path -ref reference_file -out output_path 
+python TWN_automation.py -twn parent parent_path_of_twn_folder -region subregion_path -shaep shaep_path -ref reference_file -out output_path 
 ```
 
 For example:
 
 ```sh
-python TWN_automation.py -twn ./data/TWNs -region ./data/region -ShaEP ./data/ShaEP/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output
+python TWN_automation.py -twn ./data/TWNs -region ./data/region -shaep ./data/ShaEP/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output
 ```
 
 ## Advanced Usage
@@ -114,13 +114,13 @@ Sets the criteria for selecting shape similarity and distance average for groupe
 * same as TWN_automation.py
 
 ```sh
-python TWN_anlysis.py -twn path_of_twn_folder -region subregion_path -ShaEP shaep_path -ref reference_file -out output_path -cond set_condition_of_extract_values
+python TWN_anlysis.py -twn path_of_twn_folder -region subregion_path -shaep shaep_path -ref reference_file -out output_path -cond set_condition_of_extract_values
 ```
 
 For example:
 
 ```sh
-python TWN_anlysis.py -twn ./data/TWNs/TWNs_CDK2 -region ./data/region -ShaEP ./data/ShaEP/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output -cond True
+python TWN_anlysis.py -twn ./data/TWNs/TWNs_CDK2 -region ./data/region -shaep ./data/ShaEP/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output -cond True
 ```
 
 
