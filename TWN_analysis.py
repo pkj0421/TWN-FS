@@ -18,7 +18,7 @@ TWN_gridbox.py
 parameters :
 -twn        TWN folder path (.pdb)
 -region     Subregion folder path (.mol2)
--shaep      ShaEP program path
+-ShaEP      ShaEP program path
 -ref        Reference form file path (initial columns in Summary, .xlsx)
 -out        Output path
 '''
@@ -236,7 +236,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='TWN analysis')
     parser.add_argument('-twn', '--twn_water', required=True, help='Set your twn folder')
     parser.add_argument('-region', '--region', required=True, help='Set your region folder')
-    parser.add_argument('-shaep', '--shaep', required=True, help='Set your ShaEP program')
+    parser.add_argument('-ShaEP', '--ShaEP', required=True, help='Set your ShaEP program')
     parser.add_argument('-cond', '--condition', default=False, help='If you want extract condition')
     parser.add_argument('-ref', '--ref_form', required=True, help='Set your reference form')
     parser.add_argument('-out', '--output', required=True, help='Set your output folder')
@@ -250,8 +250,8 @@ if __name__ == "__main__":
 
     # set regions
     # you can select specific subregion [AP, FP, GA, SE, X]
-    # subregions = ['FP']
-    subregions = ['AP', 'FP', 'GA', 'SE', 'X']
+    # subregions = ['AP', 'FP', 'GA', 'SE', 'X']
+    subregions = ['AP']
     logger.info(f'Subregions : {subregions}')
 
     # Prepare fragment coordinates for distance calculation with twn

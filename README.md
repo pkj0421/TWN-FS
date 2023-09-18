@@ -34,7 +34,28 @@ TWN_analysis.py and TWN_gridbox.py are operated sequentially.
 
 TWNs of cyclin dependent kinase 2 (CDK2) and fragments of subregion are provided as example data.
 
-Outputs :
+#### Provided file
+
+Files that can be changed according to user analysis
+1. TWNs (data/TWNs_CDK2/.pdb file)
+2. KinFragLib AP region fragment (data/region/AP.mol2)
+3. reference_form (data/reference_form.xlsx)
+
+#### Calculate programs and files
+* shaep.exe (data/ShaEP): calculates shape similarity 
+* TWN_automation.py: analyze and summarize grouped TWNs (includes TWN_gridbox.py and TWN_analysis.py)
+* TWN_gridbox.py: generate grouped TWNs
+* TWN_analysis.py: analyze and summarize grouped TWNs–fragment shape similarity and average distance
+
+#### Protein coordinate information 
+* Protein_CDK2.pdb (Klifs coordinate, CDK2 PDB 4ERW)
+
+#### Input file :
+* Protein TWNs extracted after MD simulation (data/TWNs_CDK2/.pdb file)
+* AP region fragment (data/region/AP.mol2): AP (.mol2) file is KinFragLib's AP site fragments.
+* reference_form (data/reference_form.xlsx): includes fragment details (ID, Kinase, PDB, SMILES, region). reference_form (.xlsx) file is KinFragLib's AP site fragments information.
+
+#### Output file :
 * TWN.pdb : pdb file (grouped TWNs-fragment visualization, only oxygen atoms are displayed).
 * Summary.xlsx : summary of results grouped TWNs-fragment calculation scores (shape similarity and average distance).
 * TWN_Group_inform.xlsx : information(TWNs-configuration, coordinates, counts) of grouped TWNs-fragment.
@@ -43,15 +64,14 @@ Outputs :
 * Distance_Average, ShaEP : calculation scores (shape similarity and average distance).
 * Analysis.txt, TWN_gridbox.txt : log files of .py that was executed.
 
-
 ```sh
-python TWN_automation.py -twn parent parent_path_of_twn_folder -region subregion_path -shaep shaep_path -ref reference_file -out output_path 
+python TWN_automation.py -twn parent parent_path_of_twn_folder -region subregion_path -ShaEP shaep_path -ref reference_file -out output_path 
 ```
 
 For example:
 
 ```sh
-python TWN_automation.py -twn ./data/TWNs -region ./data/region -shaep ./data/shaep/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output
+python TWN_automation.py -twn ./data/TWNs -region ./data/region -ShaEP ./data/ShaEP/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output
 ```
 
 ## Advanced Usage
@@ -66,7 +86,7 @@ Define the range of grouped TWNs-fragments to extract. The criteria is ligand fi
 
 Create a complex.pdb that visualizes the protein together so that the location of the grouped TWNs-fragments is known. ('-c' option)
 
-Outputs:
+#### Output files :
 * Complex.pdb : visualize grouped TWNs-fragment and protein structure.
 * TWN.pdb
 * TWN_gridbox.txt
@@ -81,7 +101,7 @@ For example:
 
 
 ```sh
-python TWN_gridbox.py -twn ./data/TWNs/CDK2 -pt ./data/protein_CDK2.pdb -bd ./data/boundary_STU.pdb -o ./data/output -c 
+python TWN_gridbox.py -twn ./data/TWNs/TWNs_CDK2 -pt ./data/protein_CDK2.pdb -bd ./data/boundary_STU.pdb -o ./data/output -c 
 ```
 
 ### _TWN_anlysis.py_
@@ -90,17 +110,17 @@ Calculate shape similarity and distance average as a result of TWN_gridbox.py.
 
 Sets the criteria for selecting shape similarity and distance average for grouped TWNs-fragments, ascending or descending ('-cond' option)
 
-Outputs:
+#### Output files :
 * same as TWN_automation.py
 
 ```sh
-python TWN_anlysis.py -twn path_of_twn_folder -region subregion_path -shaep shaep_path -ref reference_file -out output_path -cond set_condition_of_extract_values
+python TWN_anlysis.py -twn path_of_twn_folder -region subregion_path -ShaEP shaep_path -ref reference_file -out output_path -cond set_condition_of_extract_values
 ```
 
 For example:
 
 ```sh
-python TWN_anlysis.py -twn ./data/TWNs/CDK2 -region ./data/region -shaep ./data/shaep/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output -cond True
+python TWN_anlysis.py -twn ./data/TWNs/TWNs_CDK2 -region ./data/region -ShaEP ./data/ShaEP/shaep.exe -ref ./data/reference_form.xlsx -out ./data/output -cond True
 ```
 
 
