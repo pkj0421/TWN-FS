@@ -94,14 +94,14 @@ Create a complex.pdb that visualizes the protein together so that the location o
 
 
 ```sh
-python TWN_gridbox.py -twn TWN_file -pt protein_file -bd boundary_file -o output_path -c complex 
+python TWN_gridbox.py -twn TWN_file -pt protein_file -o output_path -c complex 
 ```
 
 For example:
 
 
 ```sh
-python TWN_gridbox.py -twn ./data/TWNs/TWNs_CDK2 -pt ./data/protein_CDK2.pdb -bd ./data/boundary_STU.pdb -o ./data/output -c 
+python TWN_gridbox.py -twn ./data/TWNs/TWNs_CDK2 -pt ./data/protein_CDK2.pdb -o ./data/output -c 
 ```
 
 ### _TWN_anlysis.py_
