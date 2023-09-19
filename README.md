@@ -48,7 +48,7 @@ Files that can be changed according to user analysis
 * TWN_analysis.py: analyze and summarize grouped TWNs–fragment shape similarity and average distance
 
 #### Protein coordinate information 
-* Protein_CDK2.pdb (Klifs coordinate, CDK2 PDB 4ERW)
+* Protein_CDK2.pdb (data/Protein_CDK2.pdb) Klifs coordinate, CDK2 PDB 4ERW)
 
 #### Input file :
 * Protein TWNs extracted after MD simulation (data/TWNs_CDK2/.pdb file)
@@ -101,7 +101,7 @@ For example:
 
 
 ```sh
-python TWN_gridbox.py -twn ./data/TWNs/TWNs_CDK2 -pt ./data/protein_CDK2.pdb -o ./data/output -c 
+python TWN_gridbox.py -twn ./data/TWNs/TWNs_CDK2 -pt ./data/Protein_CDK2.pdb -o ./data/output -c 
 ```
 
 ### _TWN_anlysis.py_
