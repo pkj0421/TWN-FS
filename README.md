@@ -82,7 +82,9 @@ Grouping TWNs-fragment (primary clustering and secondary clustering)
 
 Define the protein file to display in Complex.pdb ('-pt' option)
 
-Define the range of grouped TWNs-fragments to extract. The criteria is ligand file ('-bd' option)
+Define the range of grouped TWNs-fragments to extract
+
+The criteria is ligand file ('-bd' option)
 
 Create a complex.pdb that visualizes the protein together so that the location of the grouped TWNs-fragments is known ('-c' option)
 
