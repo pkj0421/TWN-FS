@@ -127,7 +127,9 @@ python TWN_anlysis.py -twn ./data/TWNs/TWNs_CDK2 -region ./data/region -shaep ./
 
 
 ## Contact (Questions/Bugs/Requests)
-Please submit a GitHub issue or contact me [rudwls2717@naver.com](rudwls2717@naver.com)
+Questions : Please ask our professor [nskang@cnu.ac.kr](nskang@cnu.ac.kr)
+
+Bugs/Requests : Please submit a GitHub issue or contact me [rudwls2717@naver.com](rudwls2717@naver.com)
 
 ## Acknowledgements
 Thank you for our Laboratory [(https://homepage.cnu.ac.kr/cim/index.do)](https://homepage.cnu.ac.kr/cim/index.do)
