@@ -132,6 +132,6 @@ Questions : Please ask our professor [nskang@cnu.ac.kr](nskang@cnu.ac.kr)
 Bugs/Requests : Please submit a GitHub issue or contact me [rudwls2717@naver.com](rudwls2717@naver.com)
 
 ## Acknowledgements
-Thank you for our Laboratory [(https://homepage.cnu.ac.kr/cim/index.do)](https://homepage.cnu.ac.kr/cim/index.do)
+Thank you for our Laboratory [https://homepage.cnu.ac.kr/cim/index.do](https://homepage.cnu.ac.kr/cim/index.do)
 
 If you find this code useful, please consider citing our work
