@@ -1,4 +1,12 @@
-# TWN-FS
+# TWN-FS (TWN-based Fragment Screening)
+
+A novel fragment screening method for drug discovery
+
+Hye Ree Yoon, Gyoung Jin Park, Anand Balupuri, Nam Sook Kang * 
+
+[Computational and Structural Biotechnology Journal 21 (2023) 4683–4696](https://doi.org/10.1016/j.csbj.2023.09.037)
+
+## Introduction
 
 ![img.png](img.png)
 
